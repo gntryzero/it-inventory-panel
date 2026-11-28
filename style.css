@@ -13,7 +13,6 @@ body {
     padding: 40px 20px;
 }
 
-/* Контейнер */
 .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -91,7 +90,7 @@ input:focus, select:focus {
     box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.2);
 }
 
-/* Кнопки-ссылки сверху */
+/* Кнопки */
 .top-actions {
     display: flex;
     gap: 15px;
@@ -120,6 +119,18 @@ input:focus, select:focus {
 
 .btn-search { background: #1a202c; color: white; padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500; }
 .btn-search:hover { background: #000; }
+
+.btn-save {
+    background: #38a169;
+    color: white;
+    padding: 10px 20px;
+    font-size: 14px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+}
+.btn-save:hover { background: #2f855a; }
 
 /* Таблица */
 table {
@@ -164,7 +175,7 @@ tr:last-child td { border-bottom: none; }
 tr:nth-child(even) { background-color: #fbfdff; }
 tr:hover td { background-color: #f7fafc; }
 
-/* Списано */
+/* Уволенные */
 tr.retired td {
     background-color: #f8f9fa !important;
     color: #a0aec0;
