@@ -93,6 +93,7 @@ $result = mysqli_query($link, $sql);
             <th>Должность</th>
             <th>Паспорт</th>
             <th>Телефон</th>
+            <th>Адрес</th> <!-- ДОБАВИЛИ ЗАГОЛОВОК -->
             <th>Зарплата</th>
             <th>Дата приема</th>
             <th><a href="?sort=status&order=<?= $sort == 'status' && $order == 'ASC' ? 'DESC' : 'ASC' ?>&q=<?= esc($q) ?>">Статус <span><?= $icon_status ?></span></a></th>
@@ -100,19 +101,18 @@ $result = mysqli_query($link, $sql);
         </tr>
 
         <?php if ($total_rows == 0): ?>
-            <tr><td colspan="10" style="text-align:center; padding: 30px; color: #718096;">Ничего не найдено</td></tr>
+            <!-- Изменили colspan на 11, так как колонок стало 11 -->
+            <tr><td colspan="11" style="text-align:center; padding: 30px; color: #718096;">Ничего не найдено</td></tr>
         <?php endif; ?>
 
         <?php while ($row = mysqli_fetch_assoc($result)): ?>
             <?php 
                 $fired = $row['is_fired'] == 1; 
                 
-                // Если уволен, сразу ставим красный бейдж
                 if ($fired) {
                     $badge_class = 'badge-fired'; 
                     $status_text = 'Уволен';
                 } else {
-                    // Если не уволен, смотрим по статусу
                     switch ($row['status']) {
                         case 'active': 
                             $badge_class = 'badge-active'; $status_text = 'Работает'; break;
@@ -120,7 +120,7 @@ $result = mysqli_query($link, $sql);
                             $badge_class = 'badge-vacation'; $status_text = 'В отпуске'; break;
                         case 'sick': 
                             $badge_class = 'badge-sick'; $status_text = 'На больничном'; break;
-                        case 'fired': // <--- ВОТ ЭТА СТРОЧКА ИСПРАВЛЯЕТ БАГ
+                        case 'fired': 
                             $badge_class = 'badge-fired'; $status_text = 'Уволен'; break;
                         default: 
                             $badge_class = 'badge-active'; $status_text = $row['status'];
@@ -130,7 +130,7 @@ $result = mysqli_query($link, $sql);
                 // Красиво форматируем зарплату
                 $salary_formatted = $row['salary'] ? number_format($row['salary'], 0, '.', ' ') . ' ₽' : '—';
                 
-                // Красиво форматируем дату (из 2021-03-15 делаем 15.03.2021)
+                // Красиво форматируем дату
                 $date_formatted = $row['hire_date'] ? date('d.m.Y', strtotime($row['hire_date'])) : '—';
             ?>
             <tr class="<?= $fired ? 'retired' : '' ?>">
@@ -140,6 +140,7 @@ $result = mysqli_query($link, $sql);
                 <td><?= esc($row['position']) ?></td>
                 <td><?= esc($row['passport_number']) ?></td>
                 <td><?= esc($row['phone_number']) ?></td>
+                <td><?= esc($row['address']) ?></td> <!-- ДОБАВИЛИ ВЫВОД АДРЕСА -->
                 <td><?= $salary_formatted ?></td>
                 <td><?= $date_formatted ?></td>
                 <td><span class="badge <?= $badge_class ?>"><?= $status_text ?></span></td>
