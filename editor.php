@@ -16,12 +16,8 @@ if ($id > 0) {
     $r = mysqli_query($link, $sql);
     $asset = mysqli_fetch_assoc($r);
 
-    if (!$asset) {
-        die('Нет такого оборудования');
-    }
-    if ($asset['is_retired']) {
-        die('Списанное оборудование нельзя редактировать');
-    }
+    if (!$asset) die('Нет такого оборудования');
+    if ($asset['is_retired']) die('Списанное оборудование нельзя редактировать');
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -47,14 +43,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 name = '$name_e', serial_number = '$serial_e',
                 inventory_number = '$inv_e', assigned_to = '$assigned_e',
                 status = '$status_e' WHERE id = $id AND is_retired = 0";
+            $log_msg = "Отредактировал оборудование: $name";
         } else {
             $sql = "INSERT INTO assets (name, serial_number, inventory_number, assigned_to, status)
                 VALUES ('$name_e', '$serial_e', '$inv_e', '$assigned_e', '$status_e')";
+            $log_msg = "Добавил новое оборудование: $name";
         }
 
         if (!mysqli_query($link, $sql)) {
             $error = 'Не сохранилось: ' . mysqli_error($link);
         } else {
+            // Пишем в лог!
+            log_action($link, $log_msg);
             header('Location: dashboard.php');
             exit;
         }
@@ -76,7 +76,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $error) {
     <title><?= $id ? 'Редактирование' : 'Добавление' ?> оборудования</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Чуть-чуть локальных стилей для формы */
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 14px; }
         .form-group input, .form-group select { max-width: 100%; width: 400px; }
@@ -101,8 +100,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $error) {
             <input name="serial_number" value="<?= esc($asset['serial_number']) ?>" required>
         </div>
         <div class="form-group">
-            <label>Инвентарный номер:</label>
-            <input name="inventory_number" value="<?= esc($asset['inventory_number']) ?>" required>
+            <label>Инвентарный номер (начните вводить цифры):</label>
+            <input name="inventory_number" id="inv" value="<?= esc($asset['inventory_number']) ?>" placeholder="INV-1001" required>
         </div>
         <div class="form-group">
             <label>Ответственный:</label>
@@ -120,6 +119,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $error) {
         <a href="dashboard.php" style="margin-left: 15px;">Назад к списку</a>
     </form>
 </div>
+
+<!-- МАСКА ВВОДА НА JS -->
+<script>
+document.getElementById('inv').addEventListener('input', function (e) {
+    let val = this.value.toUpperCase().replace(/[^0-9]/g, ''); // оставляем только цифры
+    if (val.length > 0) {
+        this.value = 'INV-' + val;
+    } else {
+        this.value = '';
+    }
+});
+</script>
 
 </body>
 </html>
