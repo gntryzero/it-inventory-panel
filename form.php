@@ -1,21 +1,12 @@
 <?php
 require 'db.php';
-
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 $error = '';
-$emp = [
-    'full_name'       => '',
-    'passport_number' => '',
-    'phone_number'    => '',
-    'position'        => '',
-    'status'          => 'active',
-];
+$emp = ['full_name'=>'', 'passport_number'=>'', 'phone_number'=>'', 'position'=>'', 'status'=>'active'];
 
 if ($id > 0) {
-    $sql = "SELECT * FROM employees WHERE id = $id LIMIT 1";
-    $r = mysqli_query($link, $sql);
+    $r = mysqli_query($link, "SELECT * FROM employees WHERE id = $id LIMIT 1");
     $emp = mysqli_fetch_assoc($r);
-
     if (!$emp) die('Нет такого сотрудника');
     if ($emp['is_fired']) die('Уволенного нельзя редактировать');
 }
@@ -30,40 +21,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($name === '' || $passport === '' || $phone === '') {
         $error = 'ФИО, паспорт и телефон — обязательные поля';
     } else {
-        $name_e     = mysqli_real_escape_string($link, $name);
-        $passport_e = mysqli_real_escape_string($link, $passport);
-        $phone_e    = mysqli_real_escape_string($link, $phone);
-        $position_e = mysqli_real_escape_string($link, $position);
-        $status_e   = mysqli_real_escape_string($link, $status);
+        $n = mysqli_real_escape_string($link, $name);
+        $p = mysqli_real_escape_string($link, $passport);
+        $ph = mysqli_real_escape_string($link, $phone);
+        $pos = mysqli_real_escape_string($link, $position);
+        $st = mysqli_real_escape_string($link, $status);
 
         if ($id > 0) {
-            $sql = "UPDATE employees SET
-                full_name = '$name_e', passport_number = '$passport_e',
-                phone_number = '$phone_e', position = '$position_e',
-                status = '$status_e' WHERE id = $id AND is_fired = 0";
-            $log_msg = "Отредактировал сотрудника: $name";
+            mysqli_query($link, "UPDATE employees SET full_name='$n', passport_number='$p', phone_number='$ph', position='$pos', status='$st' WHERE id=$id AND is_fired=0");
+            log_action($link, "Отредактировал сотрудника: $name");
         } else {
-            $sql = "INSERT INTO employees (full_name, passport_number, phone_number, position, status)
-                VALUES ('$name_e', '$passport_e', '$phone_e', '$position_e', '$status_e')";
-            $log_msg = "Добавил нового сотрудника: $name";
+            mysqli_query($link, "INSERT INTO employees (full_name, passport_number, phone_number, position, status) VALUES ('$n', '$p', '$ph', '$pos', '$st')");
+            log_action($link, "Добавил нового сотрудника: $name");
         }
-
-        if (!mysqli_query($link, $sql)) {
-            $error = 'Не сохранилось: ' . mysqli_error($link);
-        } else {
-            log_action($link, $log_msg);
-            header('Location: index.php');
-            exit;
-        }
+        header('Location: index.php'); exit;
     }
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && $error) {
-    $emp['full_name']       = $name;
-    $emp['passport_number'] = $passport;
-    $emp['phone_number']    = $phone;
-    $emp['position']        = $position;
-    $emp['status']          = $status;
+    $emp['full_name'] = $name; $emp['passport_number'] = $passport; $emp['phone_number'] = $phone; $emp['position'] = $position; $emp['status'] = $status;
 }
 ?>
 <!doctype html>
@@ -73,41 +49,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $error) {
     <title><?= $id ? 'Редактирование' : 'Добавление' ?> сотрудника</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 14px; }
-        .form-group input, .form-group select { max-width: 100%; width: 400px; }
+        .form-group { margin-bottom: 15px; } .form-group label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 14px; } .form-group input, .form-group select { max-width: 100%; width: 400px; }
     </style>
 </head>
 <body>
-
 <div class="container">
     <h1><?= $id ? 'Редактирование' : 'Добавление' ?> сотрудника</h1>
-
-    <?php if ($error): ?>
-        <p class="error"><?= esc($error) ?></p>
-    <?php endif; ?>
-
+    <?php if ($error): ?><p class="error"><?= esc($error) ?></p><?php endif; ?>
     <form method="post">
-        <div class="form-group">
-            <label>ФИО:</label>
-            <input name="full_name" value="<?= esc($emp['full_name']) ?>" required>
-        </div>
-        <div class="form-group">
-            <label>Паспорт (4 цифры, пробел, 6 цифр):</label>
-            <input name="passport_number" id="passport" value="<?= esc($emp['passport_number']) ?>" placeholder="1234 567890" required>
-        </div>
-        <div class="form-group">
-            <label>Телефон:</label>
-            <input name="phone_number" id="phone" value="<?= esc($emp['phone_number']) ?>" placeholder="+7 (999) 123-45-67" required>
-        </div>
-        <div class="form-group">
-            <label>Должность:</label>
-            <input name="position" value="<?= esc($emp['position']) ?>">
-        </div>
+        <div class="form-group"><label>ФИО:</label><input name="full_name" id="full_name" value="<?= esc($emp['full_name']) ?>" required></div>
+        <div class="form-group"><label>Должность:</label><input name="position" id="position" value="<?= esc($emp['position']) ?>"></div>
+        <div class="form-group"><label>Паспорт:</label><input name="passport_number" id="passport" value="<?= esc($emp['passport_number']) ?>" placeholder="1234 567890" required></div>
+        <div class="form-group"><label>Телефон:</label><input name="phone_number" id="phone" value="<?= esc($emp['phone_number']) ?>" placeholder="+7 (999) 123-45-67" required></div>
         <div class="form-group">
             <label>Статус:</label>
             <select name="status">
-                <option value="active"  <?= $emp['status'] === 'active'  ? 'selected' : '' ?>>Работает</option>
+                <option value="active" <?= $emp['status'] === 'active' ? 'selected' : '' ?>>Работает</option>
                 <option value="vacation" <?= $emp['status'] === 'vacation' ? 'selected' : '' ?>>В отпуске</option>
                 <option value="sick" <?= $emp['status'] === 'sick' ? 'selected' : '' ?>>На больничном</option>
             </select>
@@ -116,25 +73,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $error) {
         <a href="index.php" style="margin-left: 15px;">Назад к списку</a>
     </form>
 </div>
-
 <script>
-// Маска для паспорта: 1234 567890
-document.getElementById('passport').addEventListener('input', function (e) {
-    let val = this.value.replace(/\D/g, ''); 
-    if (val.length > 4) {
-        this.value = val.slice(0, 4) + ' ' + val.slice(4, 10);
-    } else {
-        this.value = val;
-    }
+// Маска ФИО (только буквы и дефис/пробел)
+document.getElementById('full_name').addEventListener('input', function() {
+    this.value = this.value.replace(/[^а-яА-ЯёЁa-zA-Z\s\-]/g, '');
 });
-
-// Маска для телефона: +7 (999) 123-45-67
-document.getElementById('phone').addEventListener('input', function (e) {
+// Маска Должности
+document.getElementById('position').addEventListener('input', function() {
+    this.value = this.value.replace(/[^а-яА-ЯёЁa-zA-Z\s\-\.]/g, '');
+});
+// Маска Паспорта
+document.getElementById('passport').addEventListener('input', function() {
+    let val = this.value.replace(/\D/g, ''); 
+    if (val.length > 4) { this.value = val.slice(0, 4) + ' ' + val.slice(4, 10); } 
+    else { this.value = val; }
+});
+// Маска Телефона
+document.getElementById('phone').addEventListener('input', function() {
     let val = this.value.replace(/\D/g, '');
     if (val.length === 0) { this.value = ''; return; }
-    if (val[0] === '7' || val[0] === '8') {
-        val = val.substring(1);
-    }
+    if (val[0] === '7' || val[0] === '8') { val = val.substring(1); }
     let res = '+7 ';
     if (val.length > 0) res += '(' + val.substring(0, 3);
     if (val.length >= 4) res += ') ' + val.substring(3, 6);
@@ -143,6 +101,5 @@ document.getElementById('phone').addEventListener('input', function (e) {
     this.value = res;
 });
 </script>
-
 </body>
 </html>
