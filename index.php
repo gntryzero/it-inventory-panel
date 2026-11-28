@@ -100,19 +100,34 @@ $result = mysqli_query($link, $sql);
             <tr><td colspan="7" style="text-align:center; padding: 30px; color: #718096;">Ничего не найдено</td></tr>
         <?php endif; ?>
 
-        <?php while ($row = mysqli_fetch_assoc($result)): ?>
+               <?php while ($row = mysqli_fetch_assoc($result)): ?>
             <?php 
                 $fired = $row['is_fired'] == 1; 
-                $status_ru = ['active' => 'Работает', 'vacation' => 'В отпуске', 'sick' => 'На больничном', 'fired' => 'Уволен'];
-                $current_status = $fired ? 'Уволен' : ($status_ru[$row['status']] ?? $row['status']);
+                if ($fired) {
+                    $badge_class = 'badge-fired'; $status_text = 'Уволен';
+                } else {
+                    switch ($row['status']) {
+                        case 'active': $badge_class = 'badge-active'; $status_text = 'Работает'; break;
+                        case 'vacation': $badge_class = 'badge-vacation'; $status_text = 'В отпуске'; break;
+                        case 'sick': $badge_class = 'badge-sick'; $status_text = 'На больничном'; break;
+                        default: $badge_class = 'badge-active'; $status_text = $row['status'];
+                    }
+                }
+                
+                // Красиво форматируем зарплату
+                $salary_formatted = $row['salary'] ? number_format($row['salary'], 0, '.', ' ') . ' ₽' : '—';
+                
+                // Красиво форматируем дату (из 2021-03-15 делаем 15.03.2021)
+                $date_formatted = $row['hire_date'] ? date('d.m.Y', strtotime($row['hire_date'])) : '—';
             ?>
             <tr class="<?= $fired ? 'retired' : '' ?>">
                 <td><?= esc($row['id']) ?></td>
                 <td><strong><?= esc($row['full_name']) ?></strong></td>
+                <td><?= esc($row['department']) ?></td>
                 <td><?= esc($row['position']) ?></td>
-                <td><?= esc($row['passport_number']) ?></td>
-                <td><?= esc($row['phone_number']) ?></td>
-                <td><?= $current_status ?></td>
+                <td><?= $salary_formatted ?></td>
+                <td><?= $date_formatted ?></td>
+                <td><span class="badge <?= $badge_class ?>"><?= $status_text ?></span></td>
                 <td>
                     <?php if (!$fired): ?>
                         <a href="form.php?id=<?= (int)$row['id'] ?>" class="btn-edit">Изменить</a>
@@ -120,9 +135,7 @@ $result = mysqli_query($link, $sql);
                             <input type="hidden" name="id" value="<?= (int)$row['id'] ?>">
                             <button class="btn-retire">Уволить</button>
                         </form>
-                    <?php else: ?>
-                        —
-                    <?php endif; ?>
+                    <?php else: ?> — <?php endif; ?>
                 </td>
             </tr>
         <?php endwhile; ?>
