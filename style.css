@@ -1,170 +1,71 @@
-/* Подключаем современный шрифт */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+/* --- НОВЫЕ СТИЛИ --- */
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-body {
-    font-family: 'Inter', sans-serif;
-    background-color: #f4f7f6;
-    color: #333;
-    padding: 40px 20px;
-}
-
-/* Контейнер для центрирования */
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    background: #ffffff;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-}
-
-h1 {
-    color: #1a202c;
-    font-size: 24px;
-    font-weight: 600;
-    margin-bottom: 20px;
-    border-bottom: 2px solid #e2e8f0;
-    padding-bottom: 15px;
-}
-
-/* Стили для поиска */
-.search-form {
+/* Карточки статистики */
+.stats-container {
     display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
+    gap: 20px;
+    margin-bottom: 30px;
 }
-
-input[type="text"], input:not([type]), select {
-    padding: 10px 15px;
-    border: 1px solid #cbd5e0;
+.stat-card {
+    flex: 1;
+    background: #fff;
+    padding: 20px;
     border-radius: 8px;
-    font-size: 14px;
-    outline: none;
-    transition: border-color 0.2s;
-    width: 100%;
-    max-width: 300px;
+    border-left: 5px solid #3182ce;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
 }
-
-input:focus, select:focus {
-    border-color: #3182ce;
-}
-
-/* Ссылки */
-a {
-    color: #3182ce;
-    text-decoration: none;
-    font-weight: 500;
-}
-
-a:hover {
-    text-decoration: underline;
-}
-
-.btn-add {
-    display: inline-block;
-    background: #3182ce;
-    color: white !important;
-    padding: 10px 20px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    text-decoration: none !important;
-    font-weight: 500;
-    transition: background 0.2s;
-}
-
-.btn-add:hover {
-    background: #2b6cb0;
-}
-
-/* Таблица */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-}
-
-th {
-    background: #edf2f7;
-    color: #4a5568;
-    padding: 12px 15px;
-    text-align: left;
+.stat-card.green { border-left-color: #38a169; }
+.stat-card.red { border-left-color: #c53030; }
+.stat-label {
     font-size: 13px;
+    color: #718096;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    border-bottom: 2px solid #e2e8f0;
+    margin-bottom: 5px;
+}
+.stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1a202c;
 }
 
-td {
-    padding: 12px 15px;
-    border-bottom: 1px solid #e2e8f0;
-    font-size: 14px;
-    vertical-align: middle;
+/* Сортировка в таблице */
+th a {
+    color: #4a5568;
+    text-decoration: none;
+    display: block;
 }
-
-tr:hover td {
-    background-color: #f7fafc;
+th a:hover {
+    color: #3182ce;
 }
-
-/* Списано */
-tr.retired td {
-    background-color: #f8f9fa;
+.sort-icon {
+    font-size: 10px;
+    margin-left: 5px;
     color: #a0aec0;
 }
-tr.retired td:not(:last-child) {
-    text-decoration: line-through;
-}
 
-/* Кнопки */
-button {
-    cursor: pointer;
-    padding: 8px 14px;
-    border-radius: 6px;
-    border: none;
-    font-size: 13px;
-    font-weight: 500;
-    transition: all 0.2s;
+/* Пагинация */
+.pagination {
+    display: flex;
+    gap: 5px;
+    margin-top: 20px;
+    justify-content: center;
 }
-
-.btn-search {
-    background: #1a202c;
-    color: white;
-}
-.btn-search:hover {
-    background: #000;
-}
-
-.btn-retire {
-    background: #fed7d7;
-    color: #c53030;
-    margin-left: 5px;
-}
-.btn-retire:hover {
-    background: #feb2b2;
-}
-
-.btn-save {
-    background: #38a169;
-    color: white;
-    padding: 10px 20px;
-    font-size: 14px;
-    margin-top: 10px;
-}
-.btn-save:hover {
-    background: #2f855a;
-}
-
-/* Ошибки */
-.error {
-    color: #c53030;
-    background: #fff5f5;
-    padding: 12px 15px;
-    border-left: 4px solid #c53030;
+.pagination a, .pagination span {
+    padding: 8px 12px;
+    border: 1px solid #cbd5e0;
     border-radius: 4px;
-    margin-bottom: 20px;
+    text-decoration: none;
+    color: #4a5568;
+    font-size: 14px;
+}
+.pagination a:hover {
+    background: #edf2f7;
+}
+.pagination .active {
+    background: #3182ce;
+    color: white;
+    border-color: #3182ce;
 }
