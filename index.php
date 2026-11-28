@@ -106,14 +106,24 @@ $result = mysqli_query($link, $sql);
         <?php while ($row = mysqli_fetch_assoc($result)): ?>
             <?php 
                 $fired = $row['is_fired'] == 1; 
+                
+                // Если уволен, сразу ставим красный бейдж
                 if ($fired) {
-                    $badge_class = 'badge-fired'; $status_text = 'Уволен';
+                    $badge_class = 'badge-fired'; 
+                    $status_text = 'Уволен';
                 } else {
+                    // Если не уволен, смотрим по статусу
                     switch ($row['status']) {
-                        case 'active': $badge_class = 'badge-active'; $status_text = 'Работает'; break;
-                        case 'vacation': $badge_class = 'badge-vacation'; $status_text = 'В отпуске'; break;
-                        case 'sick': $badge_class = 'badge-sick'; $status_text = 'На больничном'; break;
-                        default: $badge_class = 'badge-active'; $status_text = $row['status'];
+                        case 'active': 
+                            $badge_class = 'badge-active'; $status_text = 'Работает'; break;
+                        case 'vacation': 
+                            $badge_class = 'badge-vacation'; $status_text = 'В отпуске'; break;
+                        case 'sick': 
+                            $badge_class = 'badge-sick'; $status_text = 'На больничном'; break;
+                        case 'fired': // <--- ВОТ ЭТА СТРОЧКА ИСПРАВЛЯЕТ БАГ
+                            $badge_class = 'badge-fired'; $status_text = 'Уволен'; break;
+                        default: 
+                            $badge_class = 'badge-active'; $status_text = $row['status'];
                     }
                 }
                 
@@ -140,7 +150,9 @@ $result = mysqli_query($link, $sql);
                             <input type="hidden" name="id" value="<?= (int)$row['id'] ?>">
                             <button class="btn-retire">Уволить</button>
                         </form>
-                    <?php else: ?> — <?php endif; ?>
+                    <?php else: ?> 
+                        — 
+                    <?php endif; ?>
                 </td>
             </tr>
         <?php endwhile; ?>
