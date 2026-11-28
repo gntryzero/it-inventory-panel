@@ -15,25 +15,28 @@ if ($q !== '') {
 }
 
 // --- 3. СОРТИРОВКА ---
-// Белый список колонок, чтобы нельзя было сделать sql-инъекцию через сортировку
 $sort = $_GET['sort'] ?? 'id';
 $order = $_GET['order'] ?? 'DESC';
 $allowed_sorts = ['id', 'name', 'status'];
 if (!in_array($sort, $allowed_sorts)) $sort = 'id';
 if ($order !== 'ASC' && $order !== 'DESC') $order = 'DESC';
 
-// --- 4. ПАГИНАЦИЯ (по 5 записей) ---
+// Иконки для сортировки
+$icon_id = ($sort == 'id') ? ($order == 'ASC' ? '↑' : '↓') : '↕';
+$icon_name = ($sort == 'name') ? ($order == 'ASC' ? '↑' : '↓') : '↕';
+$icon_status = ($sort == 'status') ? ($order == 'ASC' ? '↑' : '↓') : '↕';
+
+// --- 4. ПАГИНАЦИЯ ---
 $limit = 5;
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 if ($page < 1) $page = 1;
 $offset = ($page - 1) * $limit;
 
-// Считаем сколько всего страниц
 $count_query = mysqli_query($link, "SELECT COUNT(*) FROM assets $where");
 $total_rows = mysqli_fetch_row($count_query)[0];
 $total_pages = ceil($total_rows / $limit);
 
-// Основной запрос с сортировкой и лимитом
+// Основной запрос
 $sql = "SELECT * FROM assets $where ORDER BY $sort $order LIMIT $limit OFFSET $offset";
 $result = mysqli_query($link, $sql);
 ?>
@@ -65,37 +68,39 @@ $result = mysqli_query($link, $sql);
         </div>
     </div>
 
+    <!-- Кнопки управления -->
+    <div class="top-actions">
+        <a href="editor.php" class="btn btn-primary">+ Добавить оборудование</a>
+        <a href="export.php" class="btn btn-secondary">Скачать в Excel</a>
+        <a href="logs.php" class="btn btn-secondary">История действий</a>
+    </div>
+
+    <!-- Поиск -->
     <form method="get" class="search-form">
-        <!-- Скрытые поля, чтобы при поиске не сбрасывалась сортировка -->
         <input type="hidden" name="sort" value="<?= esc($sort) ?>">
         <input type="hidden" name="order" value="<?= esc($order) ?>">
         
-        <input name="q" value="<?= esc($q) ?>" placeholder="Поиск по названию, серийнику...">
+        <input name="q" value="<?= esc($q) ?>" placeholder="Поиск по названию или серийнику..." style="width: 300px;">
         <button type="submit" class="btn-search">Найти</button>
         <?php if ($q !== ''): ?>
-            <a href="dashboard.php" style="align-self: center; margin-left: 10px;">Сбросить</a>
+            <a href="dashboard.php" class="btn-edit">Сбросить</a>
         <?php endif; ?>
     </form>
 
-    <p style="display: flex; gap: 10px;">
-        <a href="editor.php" class="btn-add" style="margin-bottom: 0;">+ Добавить оборудование</a>
-        <a href="export.php" class="btn-add" style="background: #718096; margin-bottom: 0;">Скачать в Excel</a>
-        <a href="logs.php" class="btn-add" style="background: #4a5568; margin-bottom: 0;">История действий</a>
-    </p>
-
+    <!-- Таблица -->
     <table>
         <tr>
-            <th><a href="?sort=id&order=<?= $sort == 'id' && $order == 'ASC' ? 'DESC' : 'ASC' ?>&q=<?= esc($q) ?>">ID <span class="sort-icon">↕</span></a></th>
-            <th><a href="?sort=name&order=<?= $sort == 'name' && $order == 'ASC' ? 'DESC' : 'ASC' ?>&q=<?= esc($q) ?>">Название <span class="sort-icon">↕</span></a></th>
+            <th><a href="?sort=id&order=<?= $sort == 'id' && $order == 'ASC' ? 'DESC' : 'ASC' ?>&q=<?= esc($q) ?>">ID <span><?= $icon_id ?></span></a></th>
+            <th><a href="?sort=name&order=<?= $sort == 'name' && $order == 'ASC' ? 'DESC' : 'ASC' ?>&q=<?= esc($q) ?>">Название <span><?= $icon_name ?></span></a></th>
             <th>Серийный</th>
             <th>Инвентарный</th>
             <th>Ответственный</th>
-            <th><a href="?sort=status&order=<?= $sort == 'status' && $order == 'ASC' ? 'DESC' : 'ASC' ?>&q=<?= esc($q) ?>">Статус <span class="sort-icon">↕</span></a></th>
+            <th><a href="?sort=status&order=<?= $sort == 'status' && $order == 'ASC' ? 'DESC' : 'ASC' ?>&q=<?= esc($q) ?>">Статус <span><?= $icon_status ?></span></a></th>
             <th>Действия</th>
         </tr>
 
         <?php if ($total_rows == 0): ?>
-            <tr><td colspan="7" style="text-align:center;">Ничего не найдено</td></tr>
+            <tr><td colspan="7" style="text-align:center; padding: 30px; color: #718096;">Ничего не найдено</td></tr>
         <?php endif; ?>
 
         <?php while ($row = mysqli_fetch_assoc($result)): ?>
@@ -113,7 +118,7 @@ $result = mysqli_query($link, $sql);
                 <td><?= $current_status ?></td>
                 <td>
                     <?php if (!$retired): ?>
-                        <a href="editor.php?id=<?= (int)$row['id'] ?>">Изменить</a>
+                        <a href="editor.php?id=<?= (int)$row['id'] ?>" class="btn-edit">Изменить</a>
                         <form method="post" action="retire.php" style="display:inline" onsubmit="return confirm('Списать оборудование?')">
                             <input type="hidden" name="id" value="<?= (int)$row['id'] ?>">
                             <button class="btn-retire">Списать</button>
