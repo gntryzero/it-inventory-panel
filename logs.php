@@ -1,5 +1,5 @@
 <?php
-require 'connect.php';
+require 'db.php';
 
 $result = mysqli_query($link, "SELECT * FROM action_logs ORDER BY id DESC LIMIT 50");
 ?>
@@ -13,16 +13,13 @@ $result = mysqli_query($link, "SELECT * FROM action_logs ORDER BY id DESC LIMIT 
 <body>
 <div class="container">
     <h1>История действий</h1>
-    <p><a href="dashboard.php">← Вернуться на главную</a></p>
+    <p><a href="index.php">← Вернуться на главную</a></p>
 
     <table>
         <tr>
             <th style="width: 200px;">Дата и время</th>
             <th>Действие</th>
         </tr>
-        <?php if (mysqli_num_rows($result) == 0): ?>
-            <tr><td colspan="2">Пока нет записей</td></tr>
-        <?php endif; ?>
         <?php while ($row = mysqli_fetch_assoc($result)): ?>
             <tr>
                 <td><?= esc($row['created_at']) ?></td>
