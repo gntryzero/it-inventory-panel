@@ -20,6 +20,9 @@ $result = mysqli_query($link, "SELECT * FROM action_logs ORDER BY id DESC LIMIT 
             <th style="width: 200px;">Дата и время</th>
             <th>Действие</th>
         </tr>
+        <?php if (mysqli_num_rows($result) == 0): ?>
+            <tr><td colspan="2" style="text-align:center;">Пока нет записей</td></tr>
+        <?php endif; ?>
         <?php while ($row = mysqli_fetch_assoc($result)): ?>
             <tr>
                 <td><?= esc($row['created_at']) ?></td>
