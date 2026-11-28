@@ -5,7 +5,7 @@ header('Content-Type: text/csv; charset=utf-8');
 header('Content-Disposition: attachment; filename=staff_report.csv');
 
 $output = fopen('php://output', 'w');
-fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF)); // BOM для Excel
+fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
 
 fputcsv($output, ['ID', 'ФИО', 'Должность', 'Паспорт', 'Телефон', 'Статус'], ';');
 
