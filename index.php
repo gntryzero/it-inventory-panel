@@ -91,6 +91,8 @@ $result = mysqli_query($link, $sql);
             <th><a href="?sort=full_name&order=<?= $sort == 'full_name' && $order == 'ASC' ? 'DESC' : 'ASC' ?>&q=<?= esc($q) ?>">ФИО <span><?= $icon_name ?></span></a></th>
             <th>Отдел</th>
             <th>Должность</th>
+            <th>Паспорт</th>
+            <th>Телефон</th>
             <th>Зарплата</th>
             <th>Дата приема</th>
             <th><a href="?sort=status&order=<?= $sort == 'status' && $order == 'ASC' ? 'DESC' : 'ASC' ?>&q=<?= esc($q) ?>">Статус <span><?= $icon_status ?></span></a></th>
@@ -98,7 +100,7 @@ $result = mysqli_query($link, $sql);
         </tr>
 
         <?php if ($total_rows == 0): ?>
-            <tr><td colspan="8" style="text-align:center; padding: 30px; color: #718096;">Ничего не найдено</td></tr>
+            <tr><td colspan="10" style="text-align:center; padding: 30px; color: #718096;">Ничего не найдено</td></tr>
         <?php endif; ?>
 
         <?php while ($row = mysqli_fetch_assoc($result)): ?>
@@ -126,6 +128,8 @@ $result = mysqli_query($link, $sql);
                 <td><strong><?= esc($row['full_name']) ?></strong></td>
                 <td><?= esc($row['department']) ?></td>
                 <td><?= esc($row['position']) ?></td>
+                <td><?= esc($row['passport_number']) ?></td>
+                <td><?= esc($row['phone_number']) ?></td>
                 <td><?= $salary_formatted ?></td>
                 <td><?= $date_formatted ?></td>
                 <td><span class="badge <?= $badge_class ?>"><?= $status_text ?></span></td>
