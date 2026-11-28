@@ -98,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $error) {
         </div>
         <div class="form-group">
             <label>Телефон:</label>
-            <input name="phone_number" id="phone" value="<?= esc($emp['phone_number']) ?>" placeholder="+7 999 123-45-67" required>
+            <input name="phone_number" id="phone" value="<?= esc($emp['phone_number']) ?>" placeholder="+7 (999) 123-45-67" required>
         </div>
         <div class="form-group">
             <label>Должность:</label>
@@ -117,11 +117,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $error) {
     </form>
 </div>
 
-<!-- МАСКИ ВВОДА -->
 <script>
 // Маска для паспорта: 1234 567890
 document.getElementById('passport').addEventListener('input', function (e) {
-    let val = this.value.replace(/\D/g, ''); // только цифры
+    let val = this.value.replace(/\D/g, ''); 
     if (val.length > 4) {
         this.value = val.slice(0, 4) + ' ' + val.slice(4, 10);
     } else {
