@@ -48,7 +48,7 @@ $result = mysqli_query($link, $sql);
 <body>
 
 <div class="container">
-    <h1>Учет сотрудников</h1>
+    <h1>Отдел кадров: Учет сотрудников</h1>
 
     <!-- Блок статистики -->
     <div class="stats-container">
